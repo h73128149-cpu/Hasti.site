@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Hasti Site</title>
+
     <style>
         :root {
             --primary: #ff3366;
@@ -17,9 +19,9 @@
         }
 
         body {
-            background-color: #020205;
-            color: #fff;
-            font-family: 'Tahoma', sans-serif;
+            background: #020205;
+            color: white;
+            font-family: Tahoma, Arial, sans-serif;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -28,11 +30,13 @@
             position: relative;
         }
 
-        /* بوم ذرات کهکشانی متحرک (Canvas) */
+        /* =========================
+           BACKGROUND
+        ========================= */
+
         #particleCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
+            position: fixed;
+            inset: 0;
             width: 100%;
             height: 100%;
             z-index: 1;
@@ -40,550 +44,1596 @@
         }
 
         .cursor-light {
-            position: absolute;
+            position: fixed;
             width: 300px;
             height: 300px;
-            background: radial-gradient(circle, rgba(255, 51, 102, 0.12), transparent 70%);
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(255, 51, 102, 0.12),
+                    transparent 70%
+                );
             border-radius: 50%;
             pointer-events: none;
             transform: translate(-50%, -50%);
             z-index: 1;
-            transition: background 0.3s;
         }
 
-        /* پنل انتخاب رنگ نئون بالا صفحه */
+        /* =========================
+           THEME SWITCHER
+        ========================= */
+
         .theme-switcher {
-            position: absolute;
+            position: fixed;
             top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+
             display: flex;
             gap: 10px;
-            z-index: 10;
-            background: rgba(12, 12, 18, 0.6);
-            backdrop-filter: blur(10px);
+
+            z-index: 20;
+
+            background: rgba(12, 12, 18, 0.65);
+            backdrop-filter: blur(15px);
+
             padding: 8px 15px;
+
             border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            border: 1px solid rgba(255,255,255,0.08);
         }
 
         .theme-dot {
             width: 20px;
             height: 20px;
+
             border-radius: 50%;
+
             cursor: pointer;
-            transition: 0.3s;
+
             border: 2px solid rgba(255,255,255,0.5);
-        }
-        .theme-dot:hover {
-            transform: scale(1.2);
+
+            transition: 0.3s;
         }
 
-        /* کادر اصلی شیشه‌ای */
+        .theme-dot:hover {
+            transform: scale(1.25);
+        }
+
+        /* =========================
+           MAIN PAGE
+        ========================= */
+
         .page {
             display: none;
+
             position: relative;
-            z-index: 2;
+
+            z-index: 5;
+
             width: 92%;
-            max-width: 440px;
-            background: rgba(12, 12, 18, 0.75);
+            max-width: 450px;
+
+            max-height: 90vh;
+            overflow-y: auto;
+
+            background: rgba(12, 12, 18, 0.78);
+
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+
+            border: 1px solid rgba(255,255,255,0.1);
+
             padding: 35px 25px;
+
             border-radius: 30px;
+
             text-align: center;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+            box-shadow:
+                0 25px 50px rgba(0,0,0,0.9),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .page::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .page::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
         }
 
         .page.active {
             display: block;
-            animation: fadeIn 0.5s ease-out forwards;
+
+            animation:
+                fadeIn 0.5s ease-out forwards;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
+        /* =========================
+           TEXT
+        ========================= */
+
+        h2 {
+            font-size: 1.3rem;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        h2 span {
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        p {
+            font-size: 1rem;
+            line-height: 1.9;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        /* =========================
+           INPUT
+        ========================= */
 
         input[type="password"] {
             width: 100%;
+
             padding: 15px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+
+            background: rgba(0,0,0,0.6);
+
+            border: 1px solid rgba(255,255,255,0.1);
+
             border-radius: 16px;
-            color: #fff;
+
+            color: white;
+
             font-size: 1.05rem;
+
             text-align: center;
+
             margin: 20px 0;
+
             outline: none;
+
             transition: 0.3s;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
         }
 
         input[type="password"]:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 15px var(--primary), inset 0 2px 4px rgba(0,0,0,0.8);
+
+            box-shadow:
+                0 0 15px var(--primary),
+                inset 0 2px 4px rgba(0,0,0,0.8);
         }
 
+        /* =========================
+           BUTTON
+        ========================= */
+
         .btn {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            padding: 14px 25px;
-            border-radius: 50px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
             width: 100%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--secondary)
+                );
+
+            color: white;
+
+            border: none;
+
+            padding: 14px 25px;
+
+            border-radius: 50px;
+
+            font-size: 1rem;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+
+            box-shadow:
+                0 10px 25px rgba(0,0,0,0.4);
+
             margin-top: 15px;
+
             font-weight: bold;
         }
 
         .btn:hover {
             transform: translateY(-2px);
             opacity: 0.95;
+
+            box-shadow:
+                0 10px 30px rgba(255,51,102,0.25);
         }
+
+        /* =========================
+           ERROR
+        ========================= */
 
         .error-msg {
             color: var(--primary);
+
             font-size: 0.9rem;
+
             margin-top: 10px;
+
             display: none;
+
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%,100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        /* =========================
+           THREE PHOTOS
+        ========================= */
+
+        .photos-container {
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 25px;
         }
 
         .profile-container {
             position: relative;
-            width: 130px;
-            height: 130px;
-            margin: 0 auto 20px auto;
+
+            width: 105px;
+            height: 105px;
+
             cursor: pointer;
+
+            flex-shrink: 0;
         }
 
         .profile-pic {
             width: 100%;
             height: 100%;
+
             border-radius: 50%;
+
             object-fit: cover;
+
             border: 3px solid var(--primary);
+
             position: relative;
+
             z-index: 2;
+
             transition: 0.3s;
         }
 
         .profile-container:hover .profile-pic {
-            transform: scale(1.05);
+            transform: scale(1.06);
         }
 
         .profile-container::after {
             content: '';
+
             position: absolute;
-            top: -6px; left: -6px; right: -6px; bottom: -6px;
-            background: linear-gradient(45deg, var(--primary), var(--secondary), transparent, var(--primary));
+
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+
+            background:
+                linear-gradient(
+                    45deg,
+                    var(--primary),
+                    var(--secondary),
+                    transparent,
+                    var(--primary)
+                );
+
             border-radius: 50%;
+
             z-index: 1;
-            animation: rotateRing 4s linear infinite;
+
+            animation:
+                rotateRing 4s linear infinite;
         }
 
         @keyframes rotateRing {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
-        /* مدال بزرگ‌نمایی عکس (Lightbox) */
+        /* =========================
+           LIGHTBOX
+        ========================= */
+
         .lightbox {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+
+            inset: 0;
+
+            background: rgba(0,0,0,0.92);
+
             display: none;
+
             justify-content: center;
             align-items: center;
+
             z-index: 100;
+
             backdrop-filter: blur(10px);
+
+            cursor: pointer;
         }
+
         .lightbox img {
             max-width: 85%;
-            max-height: 85%;
+            max-height: 80%;
+
+            object-fit: contain;
+
             border-radius: 20px;
+
             border: 2px solid var(--primary);
-            box-shadow: 0 0 40px var(--primary);
-            animation: zoomIn 0.3s ease;
+
+            box-shadow:
+                0 0 40px var(--primary);
+
+            animation:
+                zoomIn 0.3s ease;
         }
+
         @keyframes zoomIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
-        h2 {
-            font-size: 1.3rem;
-            color: #fff;
-            margin-bottom: 20px;
-            letter-spacing: -0.5px;
+        /* =========================
+           BIRTHDAY BOX
+        ========================= */
+
+        .birthday-box {
+            position: relative;
+
+            margin: 10px 0 22px;
+
+            padding: 20px 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255,255,255,0.05),
+                    rgba(255,255,255,0.02)
+                );
+
+            border: 1px solid rgba(255,51,102,0.3);
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 0 25px rgba(255,51,102,0.08),
+                inset 0 1px 0 rgba(255,255,255,0.08);
+
+            transition: 0.3s;
         }
 
-        h2 span {
-            color: var(--primary);
+        .birthday-box:hover {
+            transform: translateY(-3px);
+
+            border-color: var(--primary);
+
+            box-shadow:
+                0 0 30px rgba(255,51,102,0.2);
         }
 
-        p {
-            font-size: 1rem;
-            line-height: 1.8;
+        .birthday-icon {
+            font-size: 2rem;
+
+            margin-bottom: 7px;
+
+            animation:
+                birthdayFloat 2s ease-in-out infinite;
+        }
+
+        @keyframes birthdayFloat {
+            0%,100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .birthday-title {
             color: #cbd5e1;
-            margin-bottom: 20px;
+
+            font-size: 0.85rem;
+
+            margin-bottom: 6px;
         }
+
+        .birthday-date {
+            font-size: 1.45rem;
+
+            font-weight: bold;
+
+            color: var(--primary);
+
+            direction: ltr;
+
+            letter-spacing: 2px;
+
+            text-shadow:
+                0 0 12px var(--primary);
+        }
+
+        .birthday-subtitle {
+            margin-top: 8px;
+
+            color: #94a3b8;
+
+            font-size: 0.72rem;
+        }
+
+        /* =========================
+           COUNTER
+        ========================= */
 
         .counter-grid {
             display: flex;
+
             justify-content: space-around;
-            gap: 10px;
+
+            gap: 8px;
+
             margin: 25px 0;
         }
 
         .counter-box {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            padding: 14px 6px;
+            background:
+                rgba(255,255,255,0.03);
+
+            border:
+                1px solid rgba(255,255,255,0.06);
+
+            padding: 14px 5px;
+
             border-radius: 16px;
+
             flex: 1;
+
             transition: 0.3s;
         }
 
         .counter-box:hover {
             border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.06);
+
+            background:
+                rgba(255,255,255,0.06);
         }
 
         .counter-number {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
+
             font-weight: bold;
+
             color: var(--primary);
+
+            text-shadow:
+                0 0 8px var(--primary);
         }
 
         .counter-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
+
             color: #94a3b8;
+
             margin-top: 4px;
         }
 
-        /* پلیر موزیک */
+        /* =========================
+           MUSIC
+        ========================= */
+
         .music-player {
             display: flex;
+
             align-items: center;
+
             justify-content: center;
+
             gap: 15px;
-            background: rgba(255, 255, 255, 0.04);
+
+            background:
+                rgba(255,255,255,0.04);
+
             padding: 14px 20px;
+
             border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+
+            border:
+                1px solid rgba(255,255,255,0.06);
+
             cursor: pointer;
+
             margin: 20px 0;
+
             transition: 0.3s;
         }
 
         .music-player:hover {
             border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.06);
+
+            background:
+                rgba(255,255,255,0.06);
         }
 
         .disc-icon {
             width: 36px;
             height: 36px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--secondary)
+                );
+
             border-radius: 50%;
+
             display: flex;
+
             align-items: center;
             justify-content: center;
+
             font-size: 14px;
         }
 
         .disc-icon.playing {
-            animation: rotateDisc 2s linear infinite, pulseGlow 1.5s infinite;
+            animation:
+                rotateDisc 2s linear infinite,
+                pulseGlow 1.5s infinite;
         }
 
         @keyframes rotateDisc {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 0 0 var(--primary); }
-            50% { box-shadow: 0 0 0 10px rgba(0,0,0,0); }
+            0%,100% {
+                box-shadow:
+                    0 0 0 0 var(--primary);
+            }
+
+            50% {
+                box-shadow:
+                    0 0 0 10px rgba(0,0,0,0);
+            }
         }
 
         .music-status {
             font-size: 0.95rem;
+
             color: #e2e8f0;
         }
 
-        /* کادر شناور جدید (照顾好你自己) با انیمیشن بالا و پایین */
+        /* =========================
+           CARE BOX
+        ========================= */
+
         .floating-care-box {
             margin-top: 18px;
+
             padding: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            background:
+                rgba(255,255,255,0.03);
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
             border-radius: 16px;
-            animation: floatUpDown 3s ease-in-out infinite;
+
+            animation:
+                floatUpDown 3s ease-in-out infinite;
+
             transition: 0.3s;
         }
 
         .floating-care-box:hover {
             border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.06);
+
+            background:
+                rgba(255,255,255,0.06);
         }
 
         .care-text {
             font-size: 0.95rem;
+
             font-weight: bold;
-            color: #fff;
+
+            color: white;
+
             letter-spacing: 0.5px;
+
             margin-bottom: 4px;
         }
 
         .care-subtext {
             font-size: 0.75rem;
+
             color: var(--primary);
+
             letter-spacing: 0.3px;
         }
 
         @keyframes floatUpDown {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
+            0%,100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-6px);
+            }
         }
 
-        /* کادر پایین صفحه (تقدیم به M.T.A.Z) */
+        /* =========================
+           FOOTER
+        ========================= */
+
         .footer-badge {
             margin-top: 15px;
+
             padding: 8px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+
+            background:
+                rgba(255,255,255,0.02);
+
+            border:
+                1px solid rgba(255,255,255,0.05);
+
             border-radius: 12px;
+
             font-size: 0.8rem;
+
             color: #94a3b8;
+
             letter-spacing: 0.5px;
+
             transition: 0.3s;
         }
 
         .footer-badge:hover {
             border-color: var(--primary);
-            color: #fff;
+
+            color: white;
         }
 
         .footer-badge span {
             color: var(--primary);
+
             font-weight: bold;
         }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 420px) {
+
+            .page {
+                width: 94%;
+
+                padding:
+                    30px 18px;
+            }
+
+            .photos-container {
+                gap: 8px;
+            }
+
+            .profile-container {
+                width: 88px;
+                height: 88px;
+            }
+
+            .counter-grid {
+                gap: 5px;
+            }
+
+            .counter-number {
+                font-size: 1rem;
+            }
+
+            .counter-label {
+                font-size: 0.65rem;
+            }
+        }
+
     </style>
 </head>
+
 <body>
 
+    <!-- =========================
+         PARTICLES
+    ========================= -->
+
     <canvas id="particleCanvas"></canvas>
-    <div class="cursor-light" id="cursorLight"></div>
 
-    <!-- انتخاب رنگ نئون -->
+    <div
+        class="cursor-light"
+        id="cursorLight">
+    </div>
+
+
+    <!-- =========================
+         THEME SWITCHER
+    ========================= -->
+
     <div class="theme-switcher">
-        <div class="theme-dot" style="background: #ff3366;" onclick="setTheme('#ff3366', '#9333ea')"></div>
-        <div class="theme-dot" style="background: #3b82f6;" onclick="setTheme('#3b82f6', '#ec4899')"></div>
-        <div class="theme-dot" style="background: #10b981;" onclick="setTheme('#10b981', '#6366f1')"></div>
-    </div>
 
-    <!-- مدال عکس تمام صفحه -->
-    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-        <img src="pic.jpg" alt="Zoomed Profile">
-    </div>
-
-    <!-- صفحه رمز عبور -->
-    <div id="loginPage" class="page active">
-        <h2>ورود به <span>دنیای ما</span></h2>
-        <p style="font-size: 0.85rem; color: #94a3b8;">رمز عبور رو وارد کن:</p>
-        <input type="password" id="passwordInput" placeholder="••••••••">
-        <button class="btn" onclick="checkPassword()">ورود</button>
-        <div class="error-msg" id="errorMsg">رمز عبور اشتباه است!</div>
-        
-        <div class="floating-care-box">
-            <div class="care-text">照顾好你自己</div>
-            <div class="care-subtext">یادت نره</div>
+        <div
+            class="theme-dot"
+            style="background:#ff3366"
+            onclick="setTheme('#ff3366','#9333ea')">
         </div>
 
-        <div class="footer-badge">تقدیم به <span>M.T.A.Z</span></div>
+        <div
+            class="theme-dot"
+            style="background:#3b82f6"
+            onclick="setTheme('#3b82f6','#ec4899')">
+        </div>
+
+        <div
+            class="theme-dot"
+            style="background:#10b981"
+            onclick="setTheme('#10b981','#6366f1')">
+        </div>
+
     </div>
 
-    <!-- صفحه اول (تایم‌شمار و موزیک) -->
-    <div id="mainPage" class="page">
-        <h2>لحظاتی که <span>با هم بودیم</span></h2>
+
+    <!-- =========================
+         LIGHTBOX
+    ========================= -->
+
+    <div
+        class="lightbox"
+        id="lightbox"
+        onclick="closeLightbox()">
+
+        <img
+            id="lightboxImage"
+            src=""
+            alt="Zoomed Image">
+
+    </div>
+
+
+    <!-- =========================
+         LOGIN PAGE
+    ========================= -->
+
+    <div
+        id="loginPage"
+        class="page active">
+
+        <h2>
+            ورود به
+            <span>دنیای ما</span>
+        </h2>
+
+        <p
+            style="
+                font-size:0.85rem;
+                color:#94a3b8;
+            ">
+            رمز عبور رو وارد کن:
+        </p>
+
+        <input
+            type="password"
+            id="passwordInput"
+            placeholder="••••••••">
+
+        <button
+            class="btn"
+            onclick="checkPassword()">
+
+            ورود
+
+        </button>
+
+        <div
+            class="error-msg"
+            id="errorMsg">
+
+            رمز عبور اشتباه است!
+
+        </div>
+
+
+        <div class="floating-care-box">
+
+            <div class="care-text">
+                照顾好你自己
+            </div>
+
+            <div class="care-subtext">
+                یادت نره
+            </div>
+
+        </div>
+
+
+        <div class="footer-badge">
+
+            تقدیم به
+            <span>M.T.A.Z</span>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         MAIN PAGE
+    ========================= -->
+
+    <div
+        id="mainPage"
+        class="page">
+
+        <h2>
+            لحظاتی که
+            <span>با هم بودیم</span>
+        </h2>
+
+
         <div class="counter-grid">
+
             <div class="counter-box">
-                <div class="counter-number" id="seconds">0</div>
-                <div class="counter-label">ثانیه</div>
+
+                <div
+                    class="counter-number"
+                    id="seconds">
+                    0
+                </div>
+
+                <div class="counter-label">
+                    ثانیه
+                </div>
+
             </div>
+
+
             <div class="counter-box">
-                <div class="counter-number" id="minutes">0</div>
-                <div class="counter-label">دقیقه</div>
+
+                <div
+                    class="counter-number"
+                    id="minutes">
+                    0
+                </div>
+
+                <div class="counter-label">
+                    دقیقه
+                </div>
+
             </div>
+
+
             <div class="counter-box">
-                <div class="counter-number" id="hours">0</div>
-                <div class="counter-label">ساعت</div>
+
+                <div
+                    class="counter-number"
+                    id="hours">
+                    0
+                </div>
+
+                <div class="counter-label">
+                    ساعت
+                </div>
+
             </div>
+
+
             <div class="counter-box">
-                <div class="counter-number" id="days">0</div>
-                <div class="counter-label">روز</div>
+
+                <div
+                    class="counter-number"
+                    id="days">
+                    0
+                </div>
+
+                <div class="counter-label">
+                    روز
+                </div>
+
             </div>
+
         </div>
 
-        <div class="music-player" onclick="toggleMusic()">
-            <div class="disc-icon" id="disc">🎵</div>
-            <div class="music-status" id="musicText">پخش موزیک دلخواه</div>
-        </div>
-        <audio id="bgMusic" src="music.mp3" loop></audio>
 
-        <button class="btn" onclick="goToLetter()">مشاهده دل‌نوشته 💌</button>
+        <!-- MUSIC -->
+
+        <div
+            class="music-player"
+            onclick="toggleMusic()">
+
+            <div
+                class="disc-icon"
+                id="disc">
+
+                🎵
+
+            </div>
+
+            <div
+                class="music-status"
+                id="musicText">
+
+                پخش موزیک دلخواه
+
+            </div>
+
+        </div>
+
+        <audio
+            id="bgMusic"
+            src="music.mp3"
+            loop>
+        </audio>
+
+
+        <button
+            class="btn"
+            onclick="goToLetter()">
+
+            مشاهده دل‌نوشته 💌
+
+        </button>
+
 
         <div class="floating-care-box">
-            <div class="care-text">照顾好你自己</div>
-            <div class="care-subtext">یادت نره</div>
+
+            <div class="care-text">
+                照顾好你自己
+            </div>
+
+            <div class="care-subtext">
+                یادت نره
+            </div>
+
         </div>
 
-        <div class="footer-badge">تقدیم به <span>M.T.A.Z</span></div>
+
+        <div class="footer-badge">
+
+            تقدیم به
+            <span>M.T.A.Z</span>
+
+        </div>
+
     </div>
 
-    <!-- صفحه دوم (عکس و دل‌نوشته) -->
-    <div id="letterPage" class="page">
-        <div class="profile-container" onclick="openLightbox()">
-            <img src="pic.jpg" alt="Profile" class="profile-pic">
+
+    <!-- =========================
+         LETTER PAGE
+    ========================= -->
+
+    <div
+        id="letterPage"
+        class="page">
+
+        <h2>
+            قشنگ‌ترین
+            <span>اتفاق زندگی</span>
+            منه
+        </h2>
+
+
+        <!-- THREE PHOTOS -->
+
+        <div class="photos-container">
+
+            <div
+                class="profile-container"
+                onclick="openLightbox('pic.jpg')">
+
+                <img
+                    src="pic.jpg"
+                    alt="Profile 1"
+                    class="profile-pic">
+
+            </div>
+
+
+            <div
+                class="profile-container"
+                onclick="openLightbox('pic2.jpg')">
+
+                <img
+                    src="pic2.jpg"
+                    alt="Profile 2"
+                    class="profile-pic">
+
+            </div>
+
+
+            <div
+                class="profile-container"
+                onclick="openLightbox('pic3.jpg')">
+
+                <img
+                    src="pic3.jpg"
+                    alt="Profile 3"
+                    class="profile-pic">
+
+            </div>
+
         </div>
-        <h2>قشنگ‌ترین <span>اتفاق زندگی</span> منه</h2>
-        <p>حتی تو تاریک‌ترین روزها هم، حضور تو برام مثل یک ستاره‌ست. روزت مبارک هستیِ من...</p>
-        <button class="btn" onclick="goBackToMain()">بازگشت به صفحه قبل 🔙</button>
+
+
+        <!-- BIRTHDAY -->
+
+        <div class="birthday-box">
+
+            <div class="birthday-icon">
+                🎂
+            </div>
+
+            <div class="birthday-title">
+                تاریخ تولد
+            </div>
+
+            <div class="birthday-date">
+                ۱۳۸۷ / ۱۲ / ۲۸
+            </div>
+
+            <div class="birthday-subtitle">
+                روز به دنیا اومدن قشنگ‌ترین آدم 💗
+            </div>
+
+        </div>
+
+
+        <!-- LETTER -->
+
+        <p>
+            حتی تو تاریک‌ترین روزها هم،
+            حضور تو برام مثل یک ستاره‌ست.
+            روزت مبارک هستیِ من...
+        </p>
+
+
+        <button
+            class="btn"
+            onclick="goBackToMain()">
+
+            بازگشت به صفحه قبل 🔙
+
+        </button>
+
 
         <div class="floating-care-box">
-            <div class="care-text">照顾好你自己</div>
-            <div class="care-subtext">یادت نره</div>
+
+            <div class="care-text">
+                照顾好你自己
+            </div>
+
+            <div class="care-subtext">
+                یادت نره
+            </div>
+
         </div>
 
-        <div class="footer-badge">تقدیم به <span>M.T.A.Z</span></div>
+
+        <div class="footer-badge">
+
+            تقدیم به
+            <span>M.T.A.Z</span>
+
+        </div>
+
     </div>
+
 
     <script>
-        // افکت ذرات کهکشانی در پس‌زمینه
-        const canvas = document.getElementById('particleCanvas');
-        const ctx = canvas.getContext('2d');
+
+        /* =========================
+           PARTICLES
+        ========================= */
+
+        const canvas =
+            document.getElementById("particleCanvas");
+
+        const ctx =
+            canvas.getContext("2d");
+
         let particles = [];
 
+
         function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+
+            canvas.width =
+                window.innerWidth;
+
+            canvas.height =
+                window.innerHeight;
+
         }
-        window.addEventListener('resize', resizeCanvas);
+
+
+        window.addEventListener(
+            "resize",
+            resizeCanvas
+        );
+
+
         resizeCanvas();
 
-        for (let i = 0; i < 40; i++) {
+
+        for (let i = 0; i < 45; i++) {
+
             particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: Math.random() * 2 + 1,
-                speedX: (Math.random() - 0.5) * 0.5,
-                speedY: (Math.random() - 0.5) * 0.5
+
+                x:
+                    Math.random() *
+                    canvas.width,
+
+                y:
+                    Math.random() *
+                    canvas.height,
+
+                size:
+                    Math.random() * 2 + 1,
+
+                speedX:
+                    (Math.random() - 0.5) * 0.5,
+
+                speedY:
+                    (Math.random() - 0.5) * 0.5
+
             });
+
         }
+
 
         function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+
+            ctx.fillStyle =
+                "rgba(255,255,255,0.3)";
+
+
             particles.forEach(p => {
+
                 p.x += p.speedX;
                 p.y += p.speedY;
-                if (p.x < 0) p.x = canvas.width;
-                if (p.x > canvas.width) p.x = 0;
-                if (p.y < 0) p.y = canvas.height;
-                if (p.y > canvas.height) p.y = 0;
+
+
+                if (p.x < 0)
+                    p.x = canvas.width;
+
+                if (p.x > canvas.width)
+                    p.x = 0;
+
+                if (p.y < 0)
+                    p.y = canvas.height;
+
+                if (p.y > canvas.height)
+                    p.y = 0;
+
 
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+
+                ctx.arc(
+                    p.x,
+                    p.y,
+                    p.size,
+                    0,
+                    Math.PI * 2
+                );
+
                 ctx.fill();
+
             });
-            requestAnimationFrame(animateParticles);
+
+
+            requestAnimationFrame(
+                animateParticles
+            );
+
         }
+
+
         animateParticles();
 
-        // تغییر رنگ‌های نئون
-        function setTheme(primary, secondary) {
-            document.documentElement.style.setProperty('--primary', primary);
-            document.documentElement.style.setProperty('--secondary', secondary);
-            document.getElementById('cursorLight').style.background = `radial-gradient(circle, ${primary}25, transparent 70%)`;
+
+        /* =========================
+           THEME
+        ========================= */
+
+        function setTheme(
+            primary,
+            secondary
+        ) {
+
+            document.documentElement
+                .style
+                .setProperty(
+                    "--primary",
+                    primary
+                );
+
+
+            document.documentElement
+                .style
+                .setProperty(
+                    "--secondary",
+                    secondary
+                );
+
+
+            document.getElementById(
+                "cursorLight"
+            ).style.background =
+                `radial-gradient(
+                    circle,
+                    ${primary}25,
+                    transparent 70%
+                )`;
+
         }
 
-        // نور موس/لمس
-        const cursorLight = document.getElementById('cursorLight');
-        document.addEventListener('mousemove', (e) => {
-            cursorLight.style.left = e.clientX + 'px';
-            cursorLight.style.top = e.clientY + 'px';
-        });
-        document.addEventListener('touchmove', (e) => {
-            if(e.touches.length > 0) {
-                cursorLight.style.left = e.touches[0].clientX + 'px';
-                cursorLight.style.top = e.touches[0].clientY + 'px';
+
+        /* =========================
+           MOUSE LIGHT
+        ========================= */
+
+        const cursorLight =
+            document.getElementById(
+                "cursorLight"
+            );
+
+
+        document.addEventListener(
+            "mousemove",
+            e => {
+
+                cursorLight.style.left =
+                    e.clientX + "px";
+
+                cursorLight.style.top =
+                    e.clientY + "px";
+
             }
-        });
+        );
 
-        // باز و بسته کردن عکس بزرگ (Lightbox)
-        function openLightbox() {
-            document.getElementById('lightbox').style.display = 'flex';
+
+        document.addEventListener(
+            "touchmove",
+            e => {
+
+                if (e.touches.length > 0) {
+
+                    cursorLight.style.left =
+                        e.touches[0].clientX + "px";
+
+                    cursorLight.style.top =
+                        e.touches[0].clientY + "px";
+
+                }
+
+            }
+        );
+
+
+        /* =========================
+           LIGHTBOX
+        ========================= */
+
+        function openLightbox(imageSrc) {
+
+            const lightbox =
+                document.getElementById(
+                    "lightbox"
+                );
+
+            const image =
+                document.getElementById(
+                    "lightboxImage"
+                );
+
+
+            image.src = imageSrc;
+
+            lightbox.style.display =
+                "flex";
+
         }
+
+
         function closeLightbox() {
-            document.getElementById('lightbox').style.display = 'none';
+
+            document.getElementById(
+                "lightbox"
+            ).style.display =
+                "none";
+
         }
+
+
+        /* =========================
+           PASSWORD
+        ========================= */
 
         function checkPassword() {
-            const pass = document.getElementById('passwordInput').value;
-            if (pass === "Hasti.H") {
-                document.getElementById('loginPage').classList.remove('active');
-                document.getElementById('mainPage').classList.add('active');
+
+            const password =
+                document.getElementById(
+                    "passwordInput"
+                ).value;
+
+
+            if (password === "Hasti.H") {
+
+                document.getElementById(
+                    "loginPage"
+                ).classList.remove("active");
+
+
+                document.getElementById(
+                    "mainPage"
+                ).classList.add("active");
+
+
             } else {
-                document.getElementById('errorMsg').style.display = 'block';
+
+                const error =
+                    document.getElementById(
+                        "errorMsg"
+                    );
+
+                error.style.display =
+                    "block";
+
             }
+
         }
+
+
+        /* ENTER KEY */
+
+        document.getElementById(
+            "passwordInput"
+        ).addEventListener(
+            "keydown",
+            function(e) {
+
+                if (e.key === "Enter") {
+                    checkPassword();
+                }
+
+            }
+        );
+
+
+        /* =========================
+           PAGE NAVIGATION
+        ========================= */
 
         function goToLetter() {
-            document.getElementById('mainPage').classList.remove('active');
-            document.getElementById('letterPage').classList.add('active');
+
+            document.getElementById(
+                "mainPage"
+            ).classList.remove("active");
+
+
+            document.getElementById(
+                "letterPage"
+            ).classList.add("active");
+
         }
+
 
         function goBackToMain() {
-            document.getElementById('letterPage').classList.remove('active');
-            document.getElementById('mainPage').classList.add('active');
+
+            document.getElementById(
+                "letterPage"
+            ).classList.remove("active");
+
+
+            document.getElementById(
+                "mainPage"
+            ).classList.add("active");
+
         }
 
-        // تایم‌شمار دقیق از ۶ می (2026-05-06)
-        const startDate = new Date("2026-05-06T00:00:00");
+
+        /* =========================
+           COUNTER
+        ========================= */
+
+        const startDate =
+            new Date(
+                "2026-05-06T00:00:00"
+            );
+
+
         function updateCounter() {
-            const now = new Date();
-            const diff = now - startDate;
 
-            document.getElementById("days").innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
-            document.getElementById("hours").innerText = Math.floor((diff / (1000 * 60 * 60)) % 24);
-            document.getElementById("minutes").innerText = Math.floor((diff / 1000 / 60) % 60);
-            document.getElementById("seconds").innerText = Math.floor((diff / 1000) % 60);
+            const now =
+                new Date();
+
+
+            const diff =
+                now - startDate;
+
+
+            document.getElementById(
+                "days"
+            ).innerText =
+                Math.floor(
+                    diff /
+                    (1000 * 60 * 60 * 24)
+                );
+
+
+            document.getElementById(
+                "hours"
+            ).innerText =
+                Math.floor(
+                    (diff /
+                    (1000 * 60 * 60)) % 24
+                );
+
+
+            document.getElementById(
+                "minutes"
+            ).innerText =
+                Math.floor(
+                    (diff /
+                    (1000 * 60)) % 60
+                );
+
+
+            document.getElementById(
+                "seconds"
+            ).innerText =
+                Math.floor(
+                    (diff / 1000) % 60
+                );
+
         }
-        setInterval(updateCounter, 1000);
+
+
+        setInterval(
+            updateCounter,
+            1000
+        );
+
+
         updateCounter();
 
-        // کنترل موزیک
-        const music = document.getElementById('bgMusic');
-        const disc = document.getElementById('disc');
-        const musicText = document.getElementById('musicText');
+
+        /* =========================
+           MUSIC
+        ========================= */
+
+        const music =
+            document.getElementById(
+                "bgMusic"
+            );
+
+        const disc =
+            document.getElementById(
+                "disc"
+            );
+
+        const musicText =
+            document.getElementById(
+                "musicText"
+            );
+
+
         let isPlaying = false;
 
+
         function toggleMusic() {
+
             if (!isPlaying) {
+
                 music.play();
-                disc.classList.add('playing');
-                musicText.innerHTML = "توقف موزیک";
+
+                disc.classList.add(
+                    "playing"
+                );
+
+                musicText.innerHTML =
+                    "توقف موزیک";
+
                 isPlaying = true;
+
             } else {
+
                 music.pause();
-                disc.classList.remove('playing');
-                musicText.innerHTML = "پخش موزیک دلخواه";
+
+                disc.classList.remove(
+                    "playing"
+                );
+
+                musicText.innerHTML =
+                    "پخش موزیک دلخواه";
+
                 isPlaying = false;
+
             }
+
         }
+
     </script>
+
 </body>
 </html>
