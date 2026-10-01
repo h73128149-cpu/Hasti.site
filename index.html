@@ -19,8 +19,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            overflow-x: hidden;
             position: relative;
+            padding: 20px 0;
         }
 
         /* پس‌زمینه ستاره‌ای متحرک */
@@ -47,71 +48,95 @@
             100% { transform: translateY(105vh); opacity: 0; }
         }
 
-        /* باکس شیشه‌ای اصلی */
-        .container {
+        /* باکس اصلی شیشه‌ای */
+        .wrapper {
             position: relative;
             z-index: 2;
+            width: 90%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 30px;
-            border-radius: 24px;
+            padding: 20px;
+            border-radius: 20px;
             text-align: center;
-            width: 90%;
-            max-width: 380px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
         }
 
-        /* عکس پروفایل با حاشیه نئونی */
+        /* عکس پروفایل */
         .profile-pic {
-            width: 120px;
-            height: 120px;
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
             object-fit: cover;
             border: 3px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
-            transition: 0.3s ease;
+            margin: 0 auto 15px auto;
+            display: block;
         }
 
-        .profile-pic:hover {
-            transform: scale(1.05);
-            border-color: #a855f7;
-            box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+        h2 {
+            font-size: 1.1rem;
+            color: #ff3366;
+            margin-bottom: 12px;
         }
 
-        /* افکت تایپ متن */
-        h1 {
-            font-size: 1.3rem;
-            font-weight: 500;
+        p {
+            font-size: 0.95rem;
+            line-height: 1.6;
             color: #e2e8f0;
-            margin-bottom: 25px;
-            min-height: 40px;
-            border-left: 2px solid #a855f7;
-            white-space: nowrap;
-            overflow: hidden;
-            display: inline-block;
-            animation: blink 0.75s step-end infinite;
         }
 
-        @keyframes blink {
-            from, to { border-color: transparent }
-            50% { border-color: #a855f7; }
+        /* شمارشگر */
+        .counter-grid {
+            display: flex;
+            justify-content: space-around;
+            gap: 8px;
+            margin-top: 10px;
         }
 
-        /* دکمه و پلیر موزیک کاستوم */
+        .counter-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 51, 102, 0.3);
+            padding: 10px 5px;
+            border-radius: 12px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .counter-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ff3366;
+            margin-bottom: 4px;
+        }
+
+        .counter-label {
+            font-size: 0.75rem;
+            color: #cbd5e1;
+        }
+
+        /* پلیر موزیک جدید و چرخان */
         .music-player {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
             padding: 12px 20px;
             border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 51, 102, 0.3);
             cursor: pointer;
             transition: 0.3s;
+            width: fit-content;
+            margin: 0 auto;
         }
 
         .music-player:hover {
@@ -121,13 +146,12 @@
         .disc-icon {
             width: 35px;
             height: 35px;
-            background: linear-gradient(135deg, #a855f7, #6366f1);
+            background: linear-gradient(135deg, #ff3366, #a855f7);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
-            animation: none;
         }
 
         .disc-icon.playing {
@@ -149,7 +173,7 @@
             position: absolute;
             width: 8px;
             height: 8px;
-            background: #a855f7;
+            background: #ff3366;
             border-radius: 50%;
             pointer-events: none;
             z-index: 999;
@@ -166,27 +190,57 @@
 
     <div id="particles"></div>
 
-    <div class="container">
-        <!-- عکس شما (نام فایل باید pic.jpg باشه) -->
-        <img src="pic.jpg" alt="Profile" class="profile-pic">
-
-        <div>
-            <h1 id="typewriter"></h1>
+    <div class="wrapper">
+        <!-- عکس پروفایل -->
+        <div class="card">
+            <img src="pic.jpg" alt="Profile" class="profile-pic">
+            <p>قشنگ‌ترین اتفاق زندگی منه.</p>
         </div>
 
-        <!-- پلیر موزیک سفارشی (نام فایل باید music.mp3 باشه) -->
-        <div class="music-player" onclick="toggleMusic()">
-            <div class="disc-icon" id="disc">🎵</div>
-            <div class="music-status" id="musicText">پخش موزیک</div>
+        <!-- شمارشگر -->
+        <div class="card">
+            <h2>لحظاتی که با هم بودیم...</h2>
+            <div class="counter-grid">
+                <div class="counter-box">
+                    <div class="counter-number" id="seconds">0</div>
+                    <div class="counter-label">ثانیه</div>
+                </div>
+                <div class="counter-box">
+                    <div class="counter-number" id="minutes">0</div>
+                    <div class="counter-label">دقیقه</div>
+                </div>
+                <div class="counter-box">
+                    <div class="counter-number" id="hours">0</div>
+                    <div class="counter-label">ساعت</div>
+                </div>
+                <div class="counter-box">
+                    <div class="counter-number" id="days">0</div>
+                    <div class="counter-label">روز</div>
+                </div>
+            </div>
         </div>
-        <audio id="bgMusic" src="music.mp3" loop></audio>
+
+        <!-- دل‌نوشته -->
+        <div class="card">
+            <h2>یک دل‌نوشته کوچک</h2>
+            <p>حتی تو تاریک‌ترین روزها هم، حضور تو برام مثل یک ستاره‌ست. روزت مبارک هستیِ من...</p>
+        </div>
+
+        <!-- پلیر موزیک -->
+        <div class="card">
+            <h2>موزیک دلخواه</h2>
+            <div class="music-player" onclick="toggleMusic()">
+                <div class="disc-icon" id="disc">🎵</div>
+                <div class="music-status" id="musicText">پخش موزیک</div>
+            </div>
+            <audio id="bgMusic" src="music.mp3" loop></audio>
+        </div>
     </div>
 
     <script>
-        // ۱. ساخت ذرات ستاره‌ای در پس‌زمینه
+        // ۱. بارش ستاره‌ها در پس‌‌زمینه
         const particlesContainer = document.getElementById('particles');
-        const starCount = 35;
-        for (let i = 0; i < starCount; i++) {
+        for (let i = 0; i < 35; i++) {
             const star = document.createElement('div');
             star.classList.add('star');
             star.style.left = Math.random() * 100 + '%';
@@ -198,19 +252,26 @@
             particlesContainer.appendChild(star);
         }
 
-        // ۲. متن تایپ‌‌شونده (می‌تونی متن دلخواهت رو اینجا عوض کنی)
-        const text = "به دنیای تاریک من خوش آمدید...";
-        let index = 0;
-        function typeWriter() {
-            if (index < text.length) {
-                document.getElementById("typewriter").innerHTML += text.charAt(index);
-                index++;
-                setTimeout(typeWriter, 120);
-            }
-        }
-        window.onload = typeWriter;
+        // ۲. شمارشگر زمان (فرضی قابل تنظیم)
+        const startDate = new Date("2025-11-01T00:00:00"); // می‌تونی تاریخ شروع رو اینجا عوض کنی
+        function updateCounter() {
+            const now = new Date();
+            const diff = now - startDate;
 
-        // ۳. کنترل موزیک و چرخش دیسک
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / 1000 / 60) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            document.getElementById("days").innerText = days;
+            document.getElementById("hours").innerText = hours;
+            document.getElementById("minutes").innerText = minutes;
+            document.getElementById("seconds").innerText = seconds;
+        }
+        setInterval(updateCounter, 1000);
+        updateCounter();
+
+        // ۳. کنترل موزیک
         const music = document.getElementById('bgMusic');
         const disc = document.getElementById('disc');
         const musicText = document.getElementById('musicText');
@@ -230,21 +291,18 @@
             }
         }
 
-        // ۴. افکت ذرات رنگی با کلیک روی صفحه
+        // ۴. افکت کلیک
         document.addEventListener('click', (e) => {
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < 5; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('click-particle');
                 particle.style.left = e.clientX + 'px';
                 particle.style.top = e.clientY + 'px';
                 
                 const angle = Math.random() * Math.PI * 2;
-                const distance = Math.random() * 60 + 20;
-                const dx = Math.cos(angle) * distance;
-                const dy = Math.sin(angle) * distance;
-                
-                particle.style.setProperty('--dx', dx + 'px');
-                particle.style.setProperty('--dy', dy + 'px');
+                const distance = Math.random() * 50 + 20;
+                particle.style.setProperty('--dx', Math.cos(angle) * distance + 'px');
+                particle.style.setProperty('--dy', Math.sin(angle) * distance + 'px');
                 
                 document.body.appendChild(particle);
                 setTimeout(() => particle.remove(), 600);
