@@ -1,1639 +1,365 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Hasti Site</title>
-
-    <style>
-        :root {
-            --primary: #ff3366;
-            --secondary: #9333ea;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: #020205;
-            color: white;
-            font-family: Tahoma, Arial, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* =========================
-           BACKGROUND
-        ========================= */
-
-        #particleCanvas {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .cursor-light {
-            position: fixed;
-            width: 300px;
-            height: 300px;
-            background:
-                radial-gradient(
-                    circle,
-                    rgba(255, 51, 102, 0.12),
-                    transparent 70%
-                );
-            border-radius: 50%;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            z-index: 1;
-        }
-
-        /* =========================
-           THEME SWITCHER
-        ========================= */
-
-        .theme-switcher {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-
-            display: flex;
-            gap: 10px;
-
-            z-index: 20;
-
-            background: rgba(12, 12, 18, 0.65);
-            backdrop-filter: blur(15px);
-
-            padding: 8px 15px;
-
-            border-radius: 30px;
-
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .theme-dot {
-            width: 20px;
-            height: 20px;
-
-            border-radius: 50%;
-
-            cursor: pointer;
-
-            border: 2px solid rgba(255,255,255,0.5);
-
-            transition: 0.3s;
-        }
-
-        .theme-dot:hover {
-            transform: scale(1.25);
-        }
-
-        /* =========================
-           MAIN PAGE
-        ========================= */
-
-        .page {
-            display: none;
-
-            position: relative;
-
-            z-index: 5;
-
-            width: 92%;
-            max-width: 450px;
-
-            max-height: 90vh;
-            overflow-y: auto;
-
-            background: rgba(12, 12, 18, 0.78);
-
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-
-            border: 1px solid rgba(255,255,255,0.1);
-
-            padding: 35px 25px;
-
-            border-radius: 30px;
-
-            text-align: center;
-
-            box-shadow:
-                0 25px 50px rgba(0,0,0,0.9),
-                inset 0 1px 0 rgba(255,255,255,0.1);
-        }
-
-        .page::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .page::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        .page.active {
-            display: block;
-
-            animation:
-                fadeIn 0.5s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(15px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* =========================
-           TEXT
-        ========================= */
-
-        h2 {
-            font-size: 1.3rem;
-            color: white;
-            margin-bottom: 20px;
-        }
-
-        h2 span {
-            color: var(--primary);
-            text-shadow: 0 0 10px var(--primary);
-        }
-
-        p {
-            font-size: 1rem;
-            line-height: 1.9;
-            color: #cbd5e1;
-            margin-bottom: 20px;
-        }
-
-        /* =========================
-           INPUT
-        ========================= */
-
-        input[type="password"] {
-            width: 100%;
-
-            padding: 15px;
-
-            background: rgba(0,0,0,0.6);
-
-            border: 1px solid rgba(255,255,255,0.1);
-
-            border-radius: 16px;
-
-            color: white;
-
-            font-size: 1.05rem;
-
-            text-align: center;
-
-            margin: 20px 0;
-
-            outline: none;
-
-            transition: 0.3s;
-        }
-
-        input[type="password"]:focus {
-            border-color: var(--primary);
-
-            box-shadow:
-                0 0 15px var(--primary),
-                inset 0 2px 4px rgba(0,0,0,0.8);
-        }
-
-        /* =========================
-           BUTTON
-        ========================= */
-
-        .btn {
-            width: 100%;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    var(--primary),
-                    var(--secondary)
-                );
-
-            color: white;
-
-            border: none;
-
-            padding: 14px 25px;
-
-            border-radius: 50px;
-
-            font-size: 1rem;
-
-            cursor: pointer;
-
-            transition: 0.3s;
-
-            box-shadow:
-                0 10px 25px rgba(0,0,0,0.4);
-
-            margin-top: 15px;
-
-            font-weight: bold;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            opacity: 0.95;
-
-            box-shadow:
-                0 10px 30px rgba(255,51,102,0.25);
-        }
-
-        /* =========================
-           ERROR
-        ========================= */
-
-        .error-msg {
-            color: var(--primary);
-
-            font-size: 0.9rem;
-
-            margin-top: 10px;
-
-            display: none;
-
-            animation: shake 0.3s;
-        }
-
-        @keyframes shake {
-            0%,100% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-5px);
-            }
-
-            75% {
-                transform: translateX(5px);
-            }
-        }
-
-        /* =========================
-           THREE PHOTOS
-        ========================= */
-
-        .photos-container {
-            display: flex;
-
-            justify-content: center;
-            align-items: center;
-
-            gap: 12px;
-
-            margin-bottom: 25px;
-        }
-
-        .profile-container {
-            position: relative;
-
-            width: 105px;
-            height: 105px;
-
-            cursor: pointer;
-
-            flex-shrink: 0;
-        }
-
-        .profile-pic {
-            width: 100%;
-            height: 100%;
-
-            border-radius: 50%;
-
-            object-fit: cover;
-
-            border: 3px solid var(--primary);
-
-            position: relative;
-
-            z-index: 2;
-
-            transition: 0.3s;
-        }
-
-        .profile-container:hover .profile-pic {
-            transform: scale(1.06);
-        }
-
-        .profile-container::after {
-            content: '';
-
-            position: absolute;
-
-            top: -6px;
-            left: -6px;
-            right: -6px;
-            bottom: -6px;
-
-            background:
-                linear-gradient(
-                    45deg,
-                    var(--primary),
-                    var(--secondary),
-                    transparent,
-                    var(--primary)
-                );
-
-            border-radius: 50%;
-
-            z-index: 1;
-
-            animation:
-                rotateRing 4s linear infinite;
-        }
-
-        @keyframes rotateRing {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* =========================
-           LIGHTBOX
-        ========================= */
-
-        .lightbox {
-            position: fixed;
-
-            inset: 0;
-
-            background: rgba(0,0,0,0.92);
-
-            display: none;
-
-            justify-content: center;
-            align-items: center;
-
-            z-index: 100;
-
-            backdrop-filter: blur(10px);
-
-            cursor: pointer;
-        }
-
-        .lightbox img {
-            max-width: 85%;
-            max-height: 80%;
-
-            object-fit: contain;
-
-            border-radius: 20px;
-
-            border: 2px solid var(--primary);
-
-            box-shadow:
-                0 0 40px var(--primary);
-
-            animation:
-                zoomIn 0.3s ease;
-        }
-
-        @keyframes zoomIn {
-            from {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        /* =========================
-           BIRTHDAY BOX
-        ========================= */
-
-        .birthday-box {
-            position: relative;
-
-            margin: 10px 0 22px;
-
-            padding: 20px 12px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(255,255,255,0.05),
-                    rgba(255,255,255,0.02)
-                );
-
-            border: 1px solid rgba(255,51,102,0.3);
-
-            border-radius: 20px;
-
-            overflow: hidden;
-
-            box-shadow:
-                0 0 25px rgba(255,51,102,0.08),
-                inset 0 1px 0 rgba(255,255,255,0.08);
-
-            transition: 0.3s;
-        }
-
-        .birthday-box:hover {
-            transform: translateY(-3px);
-
-            border-color: var(--primary);
-
-            box-shadow:
-                0 0 30px rgba(255,51,102,0.2);
-        }
-
-        .birthday-icon {
-            font-size: 2rem;
-
-            margin-bottom: 7px;
-
-            animation:
-                birthdayFloat 2s ease-in-out infinite;
-        }
-
-        @keyframes birthdayFloat {
-            0%,100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-5px);
-            }
-        }
-
-        .birthday-title {
-            color: #cbd5e1;
-
-            font-size: 0.85rem;
-
-            margin-bottom: 6px;
-        }
-
-        .birthday-date {
-            font-size: 1.45rem;
-
-            font-weight: bold;
-
-            color: var(--primary);
-
-            direction: ltr;
-
-            letter-spacing: 2px;
-
-            text-shadow:
-                0 0 12px var(--primary);
-        }
-
-        .birthday-subtitle {
-            margin-top: 8px;
-
-            color: #94a3b8;
-
-            font-size: 0.72rem;
-        }
-
-        /* =========================
-           COUNTER
-        ========================= */
-
-        .counter-grid {
-            display: flex;
-
-            justify-content: space-around;
-
-            gap: 8px;
-
-            margin: 25px 0;
-        }
-
-        .counter-box {
-            background:
-                rgba(255,255,255,0.03);
-
-            border:
-                1px solid rgba(255,255,255,0.06);
-
-            padding: 14px 5px;
-
-            border-radius: 16px;
-
-            flex: 1;
-
-            transition: 0.3s;
-        }
-
-        .counter-box:hover {
-            border-color: var(--primary);
-
-            background:
-                rgba(255,255,255,0.06);
-        }
-
-        .counter-number {
-            font-size: 1.2rem;
-
-            font-weight: bold;
-
-            color: var(--primary);
-
-            text-shadow:
-                0 0 8px var(--primary);
-        }
-
-        .counter-label {
-            font-size: 0.7rem;
-
-            color: #94a3b8;
-
-            margin-top: 4px;
-        }
-
-        /* =========================
-           MUSIC
-        ========================= */
-
-        .music-player {
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 15px;
-
-            background:
-                rgba(255,255,255,0.04);
-
-            padding: 14px 20px;
-
-            border-radius: 50px;
-
-            border:
-                1px solid rgba(255,255,255,0.06);
-
-            cursor: pointer;
-
-            margin: 20px 0;
-
-            transition: 0.3s;
-        }
-
-        .music-player:hover {
-            border-color: var(--primary);
-
-            background:
-                rgba(255,255,255,0.06);
-        }
-
-        .disc-icon {
-            width: 36px;
-            height: 36px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    var(--primary),
-                    var(--secondary)
-                );
-
-            border-radius: 50%;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            font-size: 14px;
-        }
-
-        .disc-icon.playing {
-            animation:
-                rotateDisc 2s linear infinite,
-                pulseGlow 1.5s infinite;
-        }
-
-        @keyframes rotateDisc {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes pulseGlow {
-            0%,100% {
-                box-shadow:
-                    0 0 0 0 var(--primary);
-            }
-
-            50% {
-                box-shadow:
-                    0 0 0 10px rgba(0,0,0,0);
-            }
-        }
-
-        .music-status {
-            font-size: 0.95rem;
-
-            color: #e2e8f0;
-        }
-
-        /* =========================
-           CARE BOX
-        ========================= */
-
-        .floating-care-box {
-            margin-top: 18px;
-
-            padding: 12px;
-
-            background:
-                rgba(255,255,255,0.03);
-
-            border:
-                1px solid rgba(255,255,255,0.08);
-
-            border-radius: 16px;
-
-            animation:
-                floatUpDown 3s ease-in-out infinite;
-
-            transition: 0.3s;
-        }
-
-        .floating-care-box:hover {
-            border-color: var(--primary);
-
-            background:
-                rgba(255,255,255,0.06);
-        }
-
-        .care-text {
-            font-size: 0.95rem;
-
-            font-weight: bold;
-
-            color: white;
-
-            letter-spacing: 0.5px;
-
-            margin-bottom: 4px;
-        }
-
-        .care-subtext {
-            font-size: 0.75rem;
-
-            color: var(--primary);
-
-            letter-spacing: 0.3px;
-        }
-
-        @keyframes floatUpDown {
-            0%,100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-6px);
-            }
-        }
-
-        /* =========================
-           FOOTER
-        ========================= */
-
-        .footer-badge {
-            margin-top: 15px;
-
-            padding: 8px;
-
-            background:
-                rgba(255,255,255,0.02);
-
-            border:
-                1px solid rgba(255,255,255,0.05);
-
-            border-radius: 12px;
-
-            font-size: 0.8rem;
-
-            color: #94a3b8;
-
-            letter-spacing: 0.5px;
-
-            transition: 0.3s;
-        }
-
-        .footer-badge:hover {
-            border-color: var(--primary);
-
-            color: white;
-        }
-
-        .footer-badge span {
-            color: var(--primary);
-
-            font-weight: bold;
-        }
-
-        /* =========================
-           MOBILE
-        ========================= */
-
-        @media (max-width: 420px) {
-
-            .page {
-                width: 94%;
-
-                padding:
-                    30px 18px;
-            }
-
-            .photos-container {
-                gap: 8px;
-            }
-
-            .profile-container {
-                width: 88px;
-                height: 88px;
-            }
-
-            .counter-grid {
-                gap: 5px;
-            }
-
-            .counter-number {
-                font-size: 1rem;
-            }
-
-            .counter-label {
-                font-size: 0.65rem;
-            }
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hasti • Memory Space</title>
+<style>
+:root{--p:#ff3366;--s:#9333ea;--bg:#020205;--card:rgba(12,12,20,.76);--text:#fff;--muted:#aab3c2}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{min-height:100vh;background:radial-gradient(circle at 50% 20%,#170814 0,#020205 45%,#000 100%);color:var(--text);font-family:Tahoma,Arial,sans-serif;overflow-x:hidden}
+button,input{font:inherit}
+button{cursor:pointer}
+#stars{position:fixed;inset:0;width:100%;height:100%;z-index:-3}
+.aurora{position:fixed;inset:-20%;z-index:-2;pointer-events:none;background:radial-gradient(circle at 25% 35%,color-mix(in srgb,var(--p) 18%,transparent),transparent 25%),radial-gradient(circle at 75% 65%,color-mix(in srgb,var(--s) 16%,transparent),transparent 25%);filter:blur(45px);animation:aurora 12s ease-in-out infinite alternate}
+@keyframes aurora{to{transform:translate(4%,-3%) scale(1.06)}}
+.cursor-light{position:fixed;width:300px;height:300px;border-radius:50%;pointer-events:none;z-index:-1;transform:translate(-50%,-50%);background:radial-gradient(circle,color-mix(in srgb,var(--p) 16%,transparent),transparent 70%)}
+.topbar{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(94%,720px);z-index:50;display:flex;align-items:center;justify-content:center;gap:7px;padding:8px;background:rgba(8,8,14,.66);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.09);border-radius:999px;box-shadow:0 12px 40px #0008}
+.icon-btn,.theme-dot{border:0;color:white;background:rgba(255,255,255,.07);border-radius:50%;width:35px;height:35px;display:grid;place-items:center;transition:.25s}
+.icon-btn:hover,.theme-dot:hover{transform:translateY(-2px) scale(1.08);background:rgba(255,255,255,.13)}
+.theme-dot{border:2px solid #fff7}
+.dot-p{background:#ff3366}.dot-b{background:#3b82f6}.dot-g{background:#10b981}.dot-gold{background:#f59e0b}
+.container{width:min(94%,520px);margin:95px auto 35px}
+.page{display:none;background:var(--card);border:1px solid #ffffff18;backdrop-filter:blur(25px);border-radius:30px;padding:28px 22px;box-shadow:0 25px 70px #000b,inset 0 1px #fff1;animation:enter .5s ease}
+.page.active{display:block}
+@keyframes enter{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+h1{font-size:1.5rem;margin-bottom:9px}h2{font-size:1.28rem;margin-bottom:15px}h3{font-size:1rem}
+.accent{color:var(--p);text-shadow:0 0 15px color-mix(in srgb,var(--p) 55%,transparent)}
+.sub{color:var(--muted);font-size:.86rem;line-height:1.9}
+.btn{width:100%;border:0;border-radius:999px;padding:13px 18px;color:#fff;font-weight:bold;background:linear-gradient(135deg,var(--p),var(--s));box-shadow:0 10px 28px #0007;transition:.25s;margin-top:10px}
+.btn:hover{transform:translateY(-2px);filter:saturate(1.15)}
+.ghost{background:#ffffff09;border:1px solid #fff1;color:#fff}
+input{width:100%;padding:14px;border-radius:16px;border:1px solid #fff1;background:#0008;color:#fff;text-align:center;outline:0;margin:17px 0 7px}
+input:focus{border-color:var(--p);box-shadow:0 0 18px color-mix(in srgb,var(--p) 35%,transparent)}
+.care,.footer{margin-top:17px;padding:10px;border:1px solid #fff1;background:#ffffff05;border-radius:15px;text-align:center}
+.care strong{display:block}.care small{color:var(--p)}
+.footer{font-size:.76rem;color:#8490a3}.footer b{color:var(--p)}
+.hero-icon{font-size:3.2rem;animation:float 2.5s ease-in-out infinite}@keyframes float{50%{transform:translateY(-8px)}}
+.counter{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:20px 0}
+.counter .box,.stat{padding:13px 4px;text-align:center;background:#fff6;border:1px solid #fff1;border-radius:15px}
+.num{font-size:1.2rem;font-weight:bold;color:var(--p);text-shadow:0 0 10px var(--p)}.label{font-size:.65rem;color:#93a0b4;margin-top:4px}
+.player{margin:18px 0;padding:13px;border:1px solid #fff1;border-radius:22px;background:#fff6}
+.player-top{display:flex;align-items:center;gap:10px}.disc{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--s));font-size:18px}.playing{animation:spin 2s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.song-info{flex:1;text-align:right}.song-info b{display:block;font-size:.88rem}.song-info small{color:#8792a4}
+.progress{width:100%;accent-color:var(--p);margin:10px 0}
+.player-controls{display:flex;justify-content:center;gap:8px}.smallbtn{border:1px solid #fff1;background:#fff7;color:#fff;border-radius:999px;padding:8px 12px}
+.visualizer{width:100%;height:45px;display:block;margin-top:8px}
+.gallery{position:relative}.gallery-main{height:300px;border-radius:23px;overflow:hidden;border:1px solid #fff2;box-shadow:0 10px 35px #0008;background:#000}
+.gallery-main img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery-nav{display:flex;justify-content:space-between;position:absolute;top:50%;left:10px;right:10px;transform:translateY(-50%);pointer-events:none}.gallery-nav button{pointer-events:auto;width:38px;height:38px;border:0;border-radius:50%;background:#0009;color:#fff}
+.thumbs{display:flex;gap:8px;margin-top:10px}.thumb{height:65px;flex:1;border-radius:12px;overflow:hidden;border:2px solid transparent;opacity:.65;cursor:pointer}.thumb.active{border-color:var(--p);opacity:1}.thumb img{width:100%;height:100%;object-fit:cover}
+.dots{text-align:center;margin:8px}.dots i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#fff4;margin:3px}.dots i.on{background:var(--p);box-shadow:0 0 9px var(--p)}
+.birth{margin:18px 0;padding:20px;border-radius:22px;text-align:center;background:linear-gradient(135deg,#ffffff08,#ffffff02);border:1px solid color-mix(in srgb,var(--p) 35%,transparent);box-shadow:0 0 25px #ff336615}
+.birth .date{font-size:1.5rem;font-weight:bold;color:var(--p);letter-spacing:2px;margin:5px}.countdown{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px}.countdown div{background:#0005;border-radius:13px;padding:9px 2px}.countdown b{display:block;color:#fff;font-size:1rem}.countdown span{font-size:.58rem;color:#8f9bad}
+.timeline{position:relative;margin:20px 0}.timeline:before{content:"";position:absolute;right:10px;top:0;bottom:0;width:2px;background:linear-gradient(var(--p),var(--s),transparent)}
+.event{position:relative;padding:0 30px 18px 0}.event:before{content:"";position:absolute;right:5px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--p);box-shadow:0 0 13px var(--p)}.event .date{font-size:.72rem;color:var(--p)}.event p{font-size:.83rem;line-height:1.8;color:#c5cdd9;margin-top:4px}
+.letter-card{background:#fff6;border:1px solid #fff1;border-radius:20px;padding:20px;line-height:2;text-align:right;min-height:170px}.letter-controls{display:flex;gap:7px}.letter-controls button{flex:1}
+.random{min-height:100px;display:grid;place-items:center;text-align:center;padding:20px;border:1px dashed #fff2;border-radius:20px;color:#dbe2ed;line-height:2}
+.surprise{font-size:4rem;text-align:center;padding:25px;cursor:pointer;user-select:none}.surprise.open{animation:pop .5s}@keyframes pop{50%{transform:scale(1.2)}}
+.secret{display:none;text-align:center;margin-top:15px;padding:18px;border-radius:18px;background:linear-gradient(135deg,#ffffff08,#ffffff03);border:1px solid var(--p)}
+.editable-section{margin:18px 0;padding:18px;border:1px solid #fff1;border-radius:22px;background:#ffffff05}.editable-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}.list-row{display:flex;align-items:center;gap:8px}.list-number{width:30px;min-width:30px;text-align:center;color:var(--p);font-weight:bold}.list-input{margin:0!important;padding:11px 12px!important;text-align:right!important;background:#0006!important}.list-delete{width:38px;height:38px;min-width:38px;border:1px solid #fff1;background:#fff7;color:#fff;border-radius:12px}.add-row{margin-top:10px}.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:100;background:#111a;color:#fff;border:1px solid #fff2;padding:10px 15px;border-radius:999px;transition:.3s}.toast.show{opacity:1;transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;background:#000d;z-index:90;display:none;place-items:center;padding:20px}.modal.show{display:grid}.modal-card{width:min(94%,500px);max-height:85vh;overflow:auto;background:#101018;border:1px solid #fff2;border-radius:25px;padding:22px}.close{float:left;border:0;background:#fff1;color:#fff;border-radius:50%;width:34px;height:34px}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid #fff1}.switch{appearance:none;width:48px;height:26px;border-radius:30px;background:#555;position:relative;cursor:pointer}.switch:before{content:"";position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;right:25px;transition:.2s}.switch:checked{background:var(--p)}.switch:checked:before{right:3px}
+@media(max-width:430px){.container{width:95%}.page{padding:25px 17px}.gallery-main{height:250px}.profile-container{width:90px;height:90px}.counter{gap:5px}.num{font-size:1rem}}
+</style>
 </head>
-
 <body>
+<canvas id="stars"></canvas><div class="aurora"></div><div class="cursor-light" id="cursorLight"></div>
 
-    <!-- =========================
-         PARTICLES
-    ========================= -->
+<nav class="topbar">
+  <button class="icon-btn" onclick="toggleThemeMode()" title="حالت شب/روز">☾</button>
+  <button class="icon-btn" onclick="openSettings()" title="تنظیمات">⚙</button>
+  <button class="theme-dot dot-p" onclick="setTheme('#ff3366','#9333ea')"></button>
+  <button class="theme-dot dot-b" onclick="setTheme('#3b82f6','#ec4899')"></button>
+  <button class="theme-dot dot-g" onclick="setTheme('#10b981','#6366f1')"></button>
+  <button class="theme-dot dot-gold" onclick="setTheme('#f59e0b','#ef4444')"></button>
+</nav>
 
-    <canvas id="particleCanvas"></canvas>
+<main class="container">
 
-    <div
-        class="cursor-light"
-        id="cursorLight">
+<section id="login" class="page active">
+  <div class="hero-icon">✨</div>
+  <h1>ورود به <span class="accent">دنیای خاطره‌ها</span></h1>
+  <p class="sub">رمز عبور رو وارد کن تا وارد صفحه اصلی بشی.</p>
+  <input id="password" type="password" placeholder="••••••••">
+  <button class="btn" onclick="login()">ورود</button>
+  <p id="error" style="display:none;color:var(--p);margin-top:10px">رمز عبور اشتباه است!</p>
+  <div class="care"><strong>照顾好你自己</strong><small>یادت نره ✨</small></div>
+  <div class="footer">تقدیم به <b>M.T.A.Z</b></div>
+</section>
+
+<section id="home" class="page">
+  <h2>لحظاتی که <span class="accent">با هم بودیم</span></h2>
+  <p class="sub">هر لحظه‌ای که می‌گذره، بخشی از یک خاطره می‌شه.</p>
+
+  <div class="counter">
+    <div class="box"><div id="days" class="num">0</div><div class="label">روز</div></div>
+    <div class="box"><div id="hours" class="num">0</div><div class="label">ساعت</div></div>
+    <div class="box"><div id="minutes" class="num">0</div><div class="label">دقیقه</div></div>
+    <div class="box"><div id="seconds" class="num">0</div><div class="label">ثانیه</div></div>
+  </div>
+
+  <div class="player">
+    <div class="player-top">
+      <div id="disc" class="disc">🎵</div>
+      <div class="song-info"><b id="songName">موزیک اول</b><small id="songArtist">موزیک دلخواه</small></div>
+      <button class="smallbtn" onclick="toggleMusic()">▶</button>
     </div>
-
-
-    <!-- =========================
-         THEME SWITCHER
-    ========================= -->
-
-    <div class="theme-switcher">
-
-        <div
-            class="theme-dot"
-            style="background:#ff3366"
-            onclick="setTheme('#ff3366','#9333ea')">
-        </div>
-
-        <div
-            class="theme-dot"
-            style="background:#3b82f6"
-            onclick="setTheme('#3b82f6','#ec4899')">
-        </div>
-
-        <div
-            class="theme-dot"
-            style="background:#10b981"
-            onclick="setTheme('#10b981','#6366f1')">
-        </div>
-
+    <input id="progress" class="progress" type="range" min="0" max="100" value="0" oninput="seekMusic(this.value)">
+    <div class="player-controls">
+      <button class="smallbtn" onclick="prevSong()">⏮</button>
+      <button class="smallbtn" onclick="toggleMusic()">⏯</button>
+      <button class="smallbtn" onclick="nextSong()">⏭</button>
     </div>
+    <canvas id="visualizer" class="visualizer"></canvas>
+  </div>
+  <audio id="audio"></audio>
 
+  <button class="btn" onclick="showPage('gallery')">📸 گالری عکس‌ها</button>
+  <button class="btn ghost" onclick="showPage('favorites')">❤️ چیزهایی که دوست دارم</button>
+  <button class="btn ghost" onclick="showPage('wishes')">🌙 آرزوهای مشترک</button>
 
-    <!-- =========================
-         LIGHTBOX
-    ========================= -->
+  <div class="care"><strong>照顾好你自己</strong><small>یادت نره</small></div>
+  <div class="footer">تقدیم به <b>M.T.A.Z</b></div>
+</section>
 
-    <div
-        class="lightbox"
-        id="lightbox"
-        onclick="closeLightbox()">
+<section id="gallery" class="page">
+  <h2>📸 <span class="accent">گالری خاطره‌ها</span></h2>
+  <div class="gallery">
+    <div class="gallery-main"><img id="mainPhoto" src="pic.jpg" alt="photo"></div>
+    <div class="gallery-nav"><button onclick="prevPhoto()">‹</button><button onclick="nextPhoto()">›</button></div>
+  </div>
+  <div id="thumbs" class="thumbs"></div><div id="dots" class="dots"></div>
 
-        <img
-            id="lightboxImage"
-            src=""
-            alt="Zoomed Image">
-
+  <div class="birth">
+    <div style="font-size:2rem">🎂</div>
+    <div class="sub">تاریخ تولد</div>
+    <div class="date">۱۳۸۷ / ۱۲ / ۲۸</div>
+    <div class="sub">تا تولد بعدی:</div>
+    <div class="countdown">
+      <div><b id="bdDays">0</b><span>روز</span></div>
+      <div><b id="bdHours">0</b><span>ساعت</span></div>
+      <div><b id="bdMinutes">0</b><span>دقیقه</span></div>
+      <div><b id="bdSeconds">0</b><span>ثانیه</span></div>
     </div>
-
-
-    <!-- =========================
-         LOGIN PAGE
-    ========================= -->
-
-    <div
-        id="loginPage"
-        class="page active">
-
-        <h2>
-            ورود به
-            <span>دنیای ما</span>
-        </h2>
-
-        <p
-            style="
-                font-size:0.85rem;
-                color:#94a3b8;
-            ">
-            رمز عبور رو وارد کن:
-        </p>
-
-        <input
-            type="password"
-            id="passwordInput"
-            placeholder="••••••••">
-
-        <button
-            class="btn"
-            onclick="checkPassword()">
-
-            ورود
-
-        </button>
-
-        <div
-            class="error-msg"
-            id="errorMsg">
-
-            رمز عبور اشتباه است!
-
-        </div>
-
-
-        <div class="floating-care-box">
-
-            <div class="care-text">
-                照顾好你自己
-            </div>
-
-            <div class="care-subtext">
-                یادت نره
-            </div>
-
-        </div>
-
-
-        <div class="footer-badge">
-
-            تقدیم به
-            <span>M.T.A.Z</span>
-
-        </div>
-
-    </div>
-
-
-    <!-- =========================
-         MAIN PAGE
-    ========================= -->
-
-    <div
-        id="mainPage"
-        class="page">
-
-        <h2>
-            لحظاتی که
-            <span>با هم بودیم</span>
-        </h2>
-
-
-        <div class="counter-grid">
-
-            <div class="counter-box">
-
-                <div
-                    class="counter-number"
-                    id="seconds">
-                    0
-                </div>
-
-                <div class="counter-label">
-                    ثانیه
-                </div>
-
-            </div>
-
-
-            <div class="counter-box">
-
-                <div
-                    class="counter-number"
-                    id="minutes">
-                    0
-                </div>
-
-                <div class="counter-label">
-                    دقیقه
-                </div>
-
-            </div>
-
-
-            <div class="counter-box">
-
-                <div
-                    class="counter-number"
-                    id="hours">
-                    0
-                </div>
-
-                <div class="counter-label">
-                    ساعت
-                </div>
-
-            </div>
-
-
-            <div class="counter-box">
-
-                <div
-                    class="counter-number"
-                    id="days">
-                    0
-                </div>
-
-                <div class="counter-label">
-                    روز
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- MUSIC -->
-
-        <div
-            class="music-player"
-            onclick="toggleMusic()">
-
-            <div
-                class="disc-icon"
-                id="disc">
-
-                🎵
-
-            </div>
-
-            <div
-                class="music-status"
-                id="musicText">
-
-                پخش موزیک دلخواه
-
-            </div>
-
-        </div>
-
-        <audio
-            id="bgMusic"
-            src="music.mp3"
-            loop>
-        </audio>
-
-
-        <button
-            class="btn"
-            onclick="goToLetter()">
-
-            مشاهده دل‌نوشته 💌
-
-        </button>
-
-
-        <div class="floating-care-box">
-
-            <div class="care-text">
-                照顾好你自己
-            </div>
-
-            <div class="care-subtext">
-                یادت نره
-            </div>
-
-        </div>
-
-
-        <div class="footer-badge">
-
-            تقدیم به
-            <span>M.T.A.Z</span>
-
-        </div>
-
-    </div>
-
-
-    <!-- =========================
-         LETTER PAGE
-    ========================= -->
-
-    <div
-        id="letterPage"
-        class="page">
-
-        <h2>
-            قشنگ‌ترین
-            <span>اتفاق زندگی</span>
-            منه
-        </h2>
-
-
-        <!-- THREE PHOTOS -->
-
-        <div class="photos-container">
-
-            <div
-                class="profile-container"
-                onclick="openLightbox('pic.jpg')">
-
-                <img
-                    src="pic.jpg"
-                    alt="Profile 1"
-                    class="profile-pic">
-
-            </div>
-
-
-            <div
-                class="profile-container"
-                onclick="openLightbox('pic2.jpg')">
-
-                <img
-                    src="pic2.jpg"
-                    alt="Profile 2"
-                    class="profile-pic">
-
-            </div>
-
-
-            <div
-                class="profile-container"
-                onclick="openLightbox('pic3.jpg')">
-
-                <img
-                    src="pic3.jpg"
-                    alt="Profile 3"
-                    class="profile-pic">
-
-            </div>
-
-        </div>
-
-
-        <!-- BIRTHDAY -->
-
-        <div class="birthday-box">
-
-            <div class="birthday-icon">
-                🎂
-            </div>
-
-            <div class="birthday-title">
-                تاریخ تولد
-            </div>
-
-            <div class="birthday-date">
-                ۱۳۸۷ / ۱۲ / ۲۸
-            </div>
-
-            <div class="birthday-subtitle">
-                روز به دنیا اومدن قشنگ‌ترین آدم 💗
-            </div>
-
-        </div>
-
-
-        <!-- LETTER -->
-
-        <p>
-            حتی تو تاریک‌ترین روزها هم،
-            حضور تو برام مثل یک ستاره‌ست.
-            روزت مبارک هستیِ من...
-        </p>
-
-
-        <button
-            class="btn"
-            onclick="goBackToMain()">
-
-            بازگشت به صفحه قبل 🔙
-
-        </button>
-
-
-        <div class="floating-care-box">
-
-            <div class="care-text">
-                照顾好你自己
-            </div>
-
-            <div class="care-subtext">
-                یادت نره
-            </div>
-
-        </div>
-
-
-        <div class="footer-badge">
-
-            تقدیم به
-            <span>M.T.A.Z</span>
-
-        </div>
-
-    </div>
-
-
-    <script>
-
-        /* =========================
-           PARTICLES
-        ========================= */
-
-        const canvas =
-            document.getElementById("particleCanvas");
-
-        const ctx =
-            canvas.getContext("2d");
-
-        let particles = [];
-
-
-        function resizeCanvas() {
-
-            canvas.width =
-                window.innerWidth;
-
-            canvas.height =
-                window.innerHeight;
-
-        }
-
-
-        window.addEventListener(
-            "resize",
-            resizeCanvas
-        );
-
-
-        resizeCanvas();
-
-
-        for (let i = 0; i < 45; i++) {
-
-            particles.push({
-
-                x:
-                    Math.random() *
-                    canvas.width,
-
-                y:
-                    Math.random() *
-                    canvas.height,
-
-                size:
-                    Math.random() * 2 + 1,
-
-                speedX:
-                    (Math.random() - 0.5) * 0.5,
-
-                speedY:
-                    (Math.random() - 0.5) * 0.5
-
-            });
-
-        }
-
-
-        function animateParticles() {
-
-            ctx.clearRect(
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
-
-
-            ctx.fillStyle =
-                "rgba(255,255,255,0.3)";
-
-
-            particles.forEach(p => {
-
-                p.x += p.speedX;
-                p.y += p.speedY;
-
-
-                if (p.x < 0)
-                    p.x = canvas.width;
-
-                if (p.x > canvas.width)
-                    p.x = 0;
-
-                if (p.y < 0)
-                    p.y = canvas.height;
-
-                if (p.y > canvas.height)
-                    p.y = 0;
-
-
-                ctx.beginPath();
-
-                ctx.arc(
-                    p.x,
-                    p.y,
-                    p.size,
-                    0,
-                    Math.PI * 2
-                );
-
-                ctx.fill();
-
-            });
-
-
-            requestAnimationFrame(
-                animateParticles
-            );
-
-        }
-
-
-        animateParticles();
-
-
-        /* =========================
-           THEME
-        ========================= */
-
-        function setTheme(
-            primary,
-            secondary
-        ) {
-
-            document.documentElement
-                .style
-                .setProperty(
-                    "--primary",
-                    primary
-                );
-
-
-            document.documentElement
-                .style
-                .setProperty(
-                    "--secondary",
-                    secondary
-                );
-
-
-            document.getElementById(
-                "cursorLight"
-            ).style.background =
-                `radial-gradient(
-                    circle,
-                    ${primary}25,
-                    transparent 70%
-                )`;
-
-        }
-
-
-        /* =========================
-           MOUSE LIGHT
-        ========================= */
-
-        const cursorLight =
-            document.getElementById(
-                "cursorLight"
-            );
-
-
-        document.addEventListener(
-            "mousemove",
-            e => {
-
-                cursorLight.style.left =
-                    e.clientX + "px";
-
-                cursorLight.style.top =
-                    e.clientY + "px";
-
-            }
-        );
-
-
-        document.addEventListener(
-            "touchmove",
-            e => {
-
-                if (e.touches.length > 0) {
-
-                    cursorLight.style.left =
-                        e.touches[0].clientX + "px";
-
-                    cursorLight.style.top =
-                        e.touches[0].clientY + "px";
-
-                }
-
-            }
-        );
-
-
-        /* =========================
-           LIGHTBOX
-        ========================= */
-
-        function openLightbox(imageSrc) {
-
-            const lightbox =
-                document.getElementById(
-                    "lightbox"
-                );
-
-            const image =
-                document.getElementById(
-                    "lightboxImage"
-                );
-
-
-            image.src = imageSrc;
-
-            lightbox.style.display =
-                "flex";
-
-        }
-
-
-        function closeLightbox() {
-
-            document.getElementById(
-                "lightbox"
-            ).style.display =
-                "none";
-
-        }
-
-
-        /* =========================
-           PASSWORD
-        ========================= */
-
-        function checkPassword() {
-
-            const password =
-                document.getElementById(
-                    "passwordInput"
-                ).value;
-
-
-            if (password === "Hasti.H") {
-
-                document.getElementById(
-                    "loginPage"
-                ).classList.remove("active");
-
-
-                document.getElementById(
-                    "mainPage"
-                ).classList.add("active");
-
-
-            } else {
-
-                const error =
-                    document.getElementById(
-                        "errorMsg"
-                    );
-
-                error.style.display =
-                    "block";
-
-            }
-
-        }
-
-
-        /* ENTER KEY */
-
-        document.getElementById(
-            "passwordInput"
-        ).addEventListener(
-            "keydown",
-            function(e) {
-
-                if (e.key === "Enter") {
-                    checkPassword();
-                }
-
-            }
-        );
-
-
-        /* =========================
-           PAGE NAVIGATION
-        ========================= */
-
-        function goToLetter() {
-
-            document.getElementById(
-                "mainPage"
-            ).classList.remove("active");
-
-
-            document.getElementById(
-                "letterPage"
-            ).classList.add("active");
-
-        }
-
-
-        function goBackToMain() {
-
-            document.getElementById(
-                "letterPage"
-            ).classList.remove("active");
-
-
-            document.getElementById(
-                "mainPage"
-            ).classList.add("active");
-
-        }
-
-
-        /* =========================
-           COUNTER
-        ========================= */
-
-        const startDate =
-            new Date(
-                "2026-05-06T00:00:00"
-            );
-
-
-        function updateCounter() {
-
-            const now =
-                new Date();
-
-
-            const diff =
-                now - startDate;
-
-
-            document.getElementById(
-                "days"
-            ).innerText =
-                Math.floor(
-                    diff /
-                    (1000 * 60 * 60 * 24)
-                );
-
-
-            document.getElementById(
-                "hours"
-            ).innerText =
-                Math.floor(
-                    (diff /
-                    (1000 * 60 * 60)) % 24
-                );
-
-
-            document.getElementById(
-                "minutes"
-            ).innerText =
-                Math.floor(
-                    (diff /
-                    (1000 * 60)) % 60
-                );
-
-
-            document.getElementById(
-                "seconds"
-            ).innerText =
-                Math.floor(
-                    (diff / 1000) % 60
-                );
-
-        }
-
-
-        setInterval(
-            updateCounter,
-            1000
-        );
-
-
-        updateCounter();
-
-
-        /* =========================
-           MUSIC
-        ========================= */
-
-        const music =
-            document.getElementById(
-                "bgMusic"
-            );
-
-        const disc =
-            document.getElementById(
-                "disc"
-            );
-
-        const musicText =
-            document.getElementById(
-                "musicText"
-            );
-
-
-        let isPlaying = false;
-
-
-        function toggleMusic() {
-
-            if (!isPlaying) {
-
-                music.play();
-
-                disc.classList.add(
-                    "playing"
-                );
-
-                musicText.innerHTML =
-                    "توقف موزیک";
-
-                isPlaying = true;
-
-            } else {
-
-                music.pause();
-
-                disc.classList.remove(
-                    "playing"
-                );
-
-                musicText.innerHTML =
-                    "پخش موزیک دلخواه";
-
-                isPlaying = false;
-
-            }
-
-        }
-
-    </script>
-
+  </div>
+  <button class="btn ghost" onclick="showPage('home')">🔙 برگشت</button>
+</section>
+<section id="favorites" class="page">
+  <h2>❤️ <span class="accent">چیزهایی که دوست دارم</span></h2>
+  <p class="sub">هر چیزی که دوست داری بنویس؛ موارد ذخیره می‌شن و با رفرش پاک نمی‌شن.</p>
+  <div class="editable-section"><div id="favoritesList" class="editable-list"></div><button class="btn ghost add-row" onclick="addFavorite()">＋ اضافه کردن</button></div>
+  <button class="btn ghost" onclick="showPage('home')">🔙 برگشت</button>
+</section>
+<section id="wishes" class="page">
+  <h2>🌙 <span class="accent">آرزوهای مشترک</span></h2>
+  <p class="sub">آرزوها را بنویس؛ شماره بعدی وقتی مورد قبلی پر شود خودکار اضافه می‌شود.</p>
+  <div class="editable-section"><div id="wishesList" class="editable-list"></div><button class="btn ghost add-row" onclick="addWish()">＋ اضافه کردن آرزو</button></div>
+  <button class="btn ghost" onclick="showPage('home')">🔙 برگشت</button>
+</section>
+</main>
+
+<div id="settings" class="modal">
+  <div class="modal-card">
+    <button class="close" onclick="closeSettings()">×</button>
+    <h2>⚙ تنظیمات</h2>
+    <div class="settings-row"><span>پخش خودکار اسلایدها</span><input id="autoSlide" class="switch" type="checkbox"></div>
+    <div class="settings-row"><span>افکت نور موس</span><input id="mouseLight" class="switch" type="checkbox" checked></div>
+    <div class="settings-row"><span>حالت کم‌تحرک</span><input id="reducedMotion" class="switch" type="checkbox"></div>
+    <button class="btn ghost" onclick="closeSettings()">بستن</button>
+  </div>
+</div>
+
+<div id="toast" class="toast">انجام شد ✨</div>
+
+<script>
+/* ---------- particles ---------- */
+const canvas=document.getElementById('stars'),ctx=canvas.getContext('2d');let stars=[];
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight}
+addEventListener('resize',resize);resize();
+for(let i=0;i<80;i++)stars.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.7+.2,v:(Math.random()-.5)*.25});
+function drawStars(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='rgba(255,255,255,.55)';stars.forEach(s=>{s.x+=s.v;if(s.x<0)s.x=canvas.width;if(s.x>canvas.width)s.x=0;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill()});requestAnimationFrame(drawStars)}drawStars();
+
+/* ---------- mouse light ---------- */
+const light=document.getElementById('cursorLight');
+addEventListener('mousemove',e=>{light.style.left=e.clientX+'px';light.style.top=e.clientY+'px'});
+document.getElementById('mouseLight').onchange=e=>light.style.display=e.target.checked?'block':'none';
+
+/* ---------- themes / mode ---------- */
+function setTheme(p,s){document.documentElement.style.setProperty('--p',p);document.documentElement.style.setProperty('--s',s);toast('رنگ تم تغییر کرد ✨')}
+function toggleThemeMode(){document.body.classList.toggle('day');if(document.body.classList.contains('day')){document.body.style.background='#eef2f7';document.body.style.color='#111'}else{document.body.style.background='';document.body.style.color=''}}
+
+/* ---------- pages ---------- */
+const pages=['login','home','gallery','favorites','wishes'];
+function showPage(id){pages.forEach(p=>document.getElementById(p).classList.remove('active'));document.getElementById(id).classList.add('active');scrollTo({top:0,behavior:'smooth'})}
+function login(){if(document.getElementById('password').value==='Hasti.H'){showPage('home');toast('خوش اومدی ✨')}else{document.getElementById('error').style.display='block'}}
+document.getElementById('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+
+/* ---------- timer from 2026-05-06 ---------- */
+const startDate=new Date('2026-05-06T00:00:00');
+function updateTimer(){let d=Math.max(0,new Date()-startDate);days.textContent=Math.floor(d/86400000);hours.textContent=Math.floor(d/3600000)%24;minutes.textContent=Math.floor(d/60000)%60;seconds.textContent=Math.floor(d/1000)%60}setInterval(updateTimer,1000);updateTimer();
+
+/* ---------- birthday countdown, 28 Esfand ---------- */
+function updateBirthday(){const now=new Date();let y=now.getFullYear();let target=new Date(y,2,18,0,0,0);if(target<=now)target=new Date(y+1,2,18,0,0,0);let d=target-now;bdDays.textContent=Math.floor(d/86400000);bdHours.textContent=Math.floor(d/3600000)%24;bdMinutes.textContent=Math.floor(d/60000)%60;bdSeconds.textContent=Math.floor(d/1000)%60}
+setInterval(updateBirthday,1000);updateBirthday();
+
+/* ---------- gallery ---------- */
+const photos=['pic.jpg','pic2.jpg','pic3.jpg'];let photoIndex=0;
+const thumbs=document.getElementById('thumbs'),dots=document.getElementById('dots');
+photos.forEach((src,i)=>{const t=document.createElement('div');t.className='thumb';t.innerHTML=`<img src="${src}" alt="">`;t.onclick=()=>setPhoto(i);thumbs.appendChild(t);const dot=document.createElement('i');dot.onclick=()=>setPhoto(i);dots.appendChild(dot)});
+function setPhoto(i){photoIndex=(i+photos.length)%photos.length;document.getElementById('mainPhoto').src=photos[photoIndex];[...thumbs.children].forEach((x,j)=>x.classList.toggle('active',j===photoIndex));[...dots.children].forEach((x,j)=>x.classList.toggle('on',j===photoIndex))}
+function nextPhoto(){setPhoto(photoIndex+1)}function prevPhoto(){setPhoto(photoIndex-1)}setPhoto(0);
+let slideTimer;function resetSlide(){clearInterval(slideTimer);if(document.getElementById('autoSlide').checked)slideTimer=setInterval(nextPhoto,3500)}
+document.getElementById('autoSlide').onchange=resetSlide;
+
+/* ---------- editable lists ---------- */
+const favoriteKey='hasti_favorites_v1',wishKey='hasti_wishes_v1';
+function readList(k){try{const v=JSON.parse(localStorage.getItem(k));return Array.isArray(v)?v:[]}catch(e){return []}}
+function writeList(k,v){localStorage.setItem(k,JSON.stringify(v))}
+let favorites=readList(favoriteKey),wishes=readList(wishKey);
+
+/* --- FAVORITES: رندر و مدیریت --- */
+function renderFavorites(){
+  const box=document.getElementById('favoritesList');
+  box.innerHTML='';
+  favorites.forEach((val,i)=>box.appendChild(makeFavRow(i,val)));
+}
+function makeFavRow(i,value){
+  const row=document.createElement('div');
+  row.className='list-row';
+
+  const num=document.createElement('div');
+  num.className='list-number';
+  num.textContent=(i+1)+'؛';
+
+  const inp=document.createElement('input');
+  inp.className='list-input';
+  inp.value=value;
+  inp.type='text';
+  inp.dir='rtl';
+
+  const del=document.createElement('button');
+  del.className='list-delete';
+  del.textContent='×';
+  del.onclick=()=>removeFavorite(i);
+
+  inp.oninput=()=>{
+    favorites[i]=inp.value;
+    writeList(favoriteKey,favorites);
+  };
+
+  row.append(num,inp,del);
+  return row;
+}
+function addFavorite(){
+  favorites.push('');
+  writeList(favoriteKey,favorites);
+  const box=document.getElementById('favoritesList');
+  const row=makeFavRow(favorites.length-1,'');
+  box.appendChild(row);
+  row.querySelector('input').focus();
+}
+function removeFavorite(i){
+  favorites.splice(i,1);
+  writeList(favoriteKey,favorites);
+  renderFavorites();
+}
+
+/* --- WISHES: رندر و مدیریت --- */
+function renderWishes(){
+  const box=document.getElementById('wishesList');
+  box.innerHTML='';
+  const total=Math.max(1,wishes.length);
+  for(let i=0;i<total;i++){
+    box.appendChild(makeWishRow(i,wishes[i]||''));
+  }
+}
+function makeWishRow(i,value){
+  const row=document.createElement('div');
+  row.className='list-row';
+
+  const num=document.createElement('div');
+  num.className='list-number';
+  num.textContent=(i+1)+'؛';
+
+  const inp=document.createElement('input');
+  inp.className='list-input';
+  inp.value=value;
+  inp.type='text';
+  inp.dir='rtl';
+
+  const del=document.createElement('button');
+  del.className='list-delete';
+  del.textContent='×';
+  del.onclick=()=>removeWish(i);
+
+  inp.oninput=()=>{
+    wishes[i]=inp.value;
+    writeList(wishKey,wishes);
+    // اگر آخرین خونه پر شد، یک خونه جدید اضافه کن (بدون رندر کل لیست)
+    if(i===wishes.length-1 && inp.value.trim()!==''){
+      wishes.push('');
+      writeList(wishKey,wishes);
+      appendWishRow(wishes.length-1,'');
+    }
+  };
+
+  // اگر کاربر یه خونه وسط رو خالی کرد، حذفش کن
+  inp.addEventListener('blur',()=>{
+    if(i<wishes.length-1 && inp.value.trim()===''){
+      removeWish(i);
+    }
+  });
+
+  row.append(num,inp,del);
+  return row;
+}
+function appendWishRow(i,value){
+  const box=document.getElementById('wishesList');
+  const row=makeWishRow(i,value);
+  box.appendChild(row);
+  row.querySelector('input').focus();
+}
+function addWish(){
+  // اگه آخرین خونه خالیه، همون رو فوکوس کن
+  if(wishes.length && wishes[wishes.length-1].trim()===''){
+    const rows=document.querySelectorAll('#wishesList .list-row');
+    rows[rows.length-1].querySelector('input').focus();
+    return;
+  }
+  wishes.push('');
+  writeList(wishKey,wishes);
+  appendWishRow(wishes.length-1,'');
+}
+function removeWish(i){
+  wishes.splice(i,1);
+  writeList(wishKey,wishes);
+  renderWishes();
+}
+
+renderFavorites();
+renderWishes();
+
+/* ---------- music playlist ---------- */
+const songs=[{src:'music.mp3',name:'موزیک اول',artist:'موزیک دلخواه'},{src:'music2.mp3',name:'موزیک دوم',artist:'موزیک دلخواه'},{src:'music3.mp3',name:'موزیک سوم',artist:'موزیک دلخواه'}];
+let songIndex=0,isPlaying=false;
+const audio=document.getElementById('audio');
+function loadSong(i){songIndex=(i+songs.length)%songs.length;audio.src=songs[songIndex].src;songName.textContent=songs[songIndex].name;songArtist.textContent=songs[songIndex].artist}
+async function toggleMusic(){if(isPlaying){audio.pause();isPlaying=false;disc.classList.remove('playing')}else{try{await audio.play();isPlaying=true;disc.classList.add('playing')}catch(e){toast('فایل موزیک پیدا نشد')}}}
+function nextSong(){loadSong(songIndex+1);if(isPlaying)audio.play()}function prevSong(){loadSong(songIndex-1);if(isPlaying)audio.play()}
+audio.addEventListener('timeupdate',()=>{if(audio.duration)progress.value=audio.currentTime/audio.duration*100});
+audio.addEventListener('ended',nextSong);function seekMusic(v){if(audio.duration)audio.currentTime=v/100*audio.duration}loadSong(0);
+
+/* ---------- visualizer ---------- */
+const vc=document.getElementById('visualizer'),vctx=vc.getContext('2d');function viz(){vc.width=vc.clientWidth*2;vc.height=90;vctx.clearRect(0,0,vc.width,vc.height);let bars=22;for(let i=0;i<bars;i++){let h=isPlaying?10+Math.random()*60:5;vctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--p');vctx.fillRect(i*(vc.width/bars)+3,vc.height-h,vc.width/bars-6,h)}requestAnimationFrame(viz)}viz();
+
+/* ---------- settings ---------- */
+function openSettings(){document.getElementById('settings').classList.add('show')}function closeSettings(){document.getElementById('settings').classList.remove('show')}
+document.getElementById('reducedMotion').onchange=e=>document.body.style.setProperty('--motion',e.target.checked?'0s':'1s');
+
+/* ---------- toast ---------- */
+let toastTimer;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1800)}
+</script>
 </body>
 </html>
